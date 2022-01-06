@@ -3,34 +3,43 @@ package provider
 import (
 	"context"
 
+	"github.com/mldelaro/slack"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceScaffolding() *schema.Resource {
+func dataSourceManifest() *schema.Resource {
 	return &schema.Resource{
 		// This description is used by the documentation generator and the language server.
-		Description: "Sample data source in the Terraform provider scaffolding.",
+		Description: "Reads App Manifest via Slack API's app.manifest.export path.",
 
-		ReadContext: dataSourceScaffoldingRead,
+		ReadContext: dataSourceManifestRead,
 
 		Schema: map[string]*schema.Schema{
-			"sample_attribute": {
-				// This description is used by the documentation generator and the language server.
-				Description: "Sample attribute.",
-				Type:        schema.TypeString,
-				Required:    true,
+			"app_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"display_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 		},
 	}
 }
 
-func dataSourceScaffoldingRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	// use the meta value to retrieve your client from the provider configure method
-	// client := meta.(*apiClient)
+func dataSourceManifestRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var diags diag.Diagnostics
+	
+	appId := d.Get("app_id").(string)
+	api := slack.New("TOKEN_HERE")
+	manifest, err := api.ExportAppManifest(appId)//("A02TDSWCDDE")
+	if err != nil {
+		return diag.Errorf("Failed to make request via client.")
+	}
 
-	idFromAPI := "my-id"
-	d.SetId(idFromAPI)
+	d.Set("display_name", manifest.DisplayInformation.Name)
+	d.SetId(appId)
 
-	return diag.Errorf("not implemented")
+	return diags
 }
