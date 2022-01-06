@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 
-	"github.com/mldelaro/slack"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/mldelaro/slack"
 )
 
 func dataSourceManifest() *schema.Resource {
@@ -30,10 +30,10 @@ func dataSourceManifest() *schema.Resource {
 
 func dataSourceManifestRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	
+
 	appId := d.Get("app_id").(string)
 	api := slack.New("TOKEN_HERE")
-	manifest, err := api.ExportAppManifest(appId)//("A02TDSWCDDE")
+	manifest, err := api.ExportAppManifest(appId) //("A02TDSWCDDE")
 	if err != nil {
 		return diag.Errorf("Failed to make request via client.")
 	}
