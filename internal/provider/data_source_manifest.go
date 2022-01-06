@@ -20,6 +20,22 @@ func dataSourceManifest() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"_metadata": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"major_version": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"minor_version": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"display_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
@@ -39,7 +55,24 @@ func dataSourceManifestRead(ctx context.Context, d *schema.ResourceData, meta in
 	}
 
 	d.Set("display_name", manifest.DisplayInformation.Name)
+
+	metadata := flattenMetadata(manifest.Metadata)
+	if err := d.Set("_metadata", metadata); err != nil {
+		return diag.FromErr(err)
+	}
+
 	d.SetId(appId)
 
 	return diags
+}
+
+func flattenMetadata(metadata *slack.Metadata) []interface{} {
+	mds := make([]interface{}, 1, 1)
+
+	md := make(map[string]interface{})
+	md["major_version"] = metadata.Majorversion
+	md["minor_version"] = metadata.Minorversion
+	mds[0] = md
+
+	return mds
 }
