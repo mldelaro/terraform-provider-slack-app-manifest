@@ -36,6 +36,58 @@ func dataSourceManifest() *schema.Resource {
 					},
 				},
 			},
+			"features": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"bot_user": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"display_name": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"always_online": &schema.Schema{
+										Type:     schema.TypeBool,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"slash_commands": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"command": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"url": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"description": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"usage_hint": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"should_escape": &schema.Schema{
+										Type:     schema.TypeBool,
+										Computed: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 			"display_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
@@ -61,6 +113,11 @@ func dataSourceManifestRead(ctx context.Context, d *schema.ResourceData, meta in
 		return diag.FromErr(err)
 	}
 
+	features := flattenFeatures(manifest.Features)
+	if err := d.Set("features", features); err != nil {
+		return diag.FromErr(err)
+	}
+
 	d.SetId(appId)
 
 	return diags
@@ -75,4 +132,49 @@ func flattenMetadata(metadata *slack.Metadata) []interface{} {
 	mds[0] = md
 
 	return mds
+}
+
+func flattenFeatures(feature *slack.Features) []interface{} {
+	fs := make([]interface{}, 1, 1)
+
+	f := make(map[string]interface{})
+	bu := flattenBotUser(feature.BotUser)
+	f["bot_user"] = bu
+
+	sc := flattenSlashCommands(&feature.SlashCommands)
+	f["slash_commands"] = sc
+	fs[0] = f
+
+	return fs
+}
+
+func flattenBotUser(botUser *slack.BotUser) []interface{} {
+	bs := make([]interface{}, 1, 1)
+
+	b := make(map[string]interface{})
+	b["display_name"] = botUser.DisplayName
+	b["always_online"] = botUser.AlwaysOnline
+	bs[0] = b
+
+	return bs
+}
+
+func flattenSlashCommands(slashCommands *[]slack.SlashCommandManifest) []interface{} {
+	if slashCommands != nil {
+		scs := make([]interface{}, len(*slashCommands), len(*slashCommands))
+
+		for i, slashCommand := range *slashCommands {
+			sc := make(map[string]interface{})
+
+			sc["command"] = slashCommand.Command
+			sc["url"] = slashCommand.Url
+			sc["description"] = slashCommand.Description
+			sc["usage_hint"] = slashCommand.UsageHint
+			sc["should_escape"] = slashCommand.ShouldEscape
+
+			scs[i] = sc
+		}
+		return scs
+	}
+	return make([]interface{}, 0)
 }

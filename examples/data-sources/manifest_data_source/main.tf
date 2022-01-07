@@ -12,7 +12,7 @@ provider "slack" {
 }
 
 data "slack_manifest" "example" {
-  app_id = "A02TDSWCDDE"
+  app_id = "A8UDA7VKN"
 }
 
 output "some_manifest" {
