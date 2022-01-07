@@ -36,6 +36,18 @@ func dataSourceManifest() *schema.Resource {
 					},
 				},
 			},
+			"display_information": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"features": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -88,9 +100,35 @@ func dataSourceManifest() *schema.Resource {
 					},
 				},
 			},
-			"display_name": &schema.Schema{
-				Type:     schema.TypeString,
+			"oauth_config": &schema.Schema{
+				Type:     schema.TypeList,
 				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"redirect_urls": &schema.Schema{
+							Type: schema.TypeList,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Computed: true,
+						},
+						"scopes": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"bot": &schema.Schema{
+										Computed: true,
+										Type:     schema.TypeList,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 		},
 	}
@@ -113,8 +151,18 @@ func dataSourceManifestRead(ctx context.Context, d *schema.ResourceData, meta in
 		return diag.FromErr(err)
 	}
 
+	displayInformation := flattenDisplayInformation(manifest.DisplayInformation)
+	if err := d.Set("display_information", displayInformation); err != nil {
+		return diag.FromErr(err)
+	}
+
 	features := flattenFeatures(manifest.Features)
 	if err := d.Set("features", features); err != nil {
+		return diag.FromErr(err)
+	}
+
+	oauthConfig := flattenOAuthConfig(manifest.OAuthConfig)
+	if err := d.Set("oauth_config", oauthConfig); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -132,6 +180,16 @@ func flattenMetadata(metadata *slack.Metadata) []interface{} {
 	mds[0] = md
 
 	return mds
+}
+
+func flattenDisplayInformation(displayInformation *slack.DisplayInformation) []interface{} {
+	ds := make([]interface{}, 1, 1)
+
+	d := make(map[string]interface{})
+	d["name"] = displayInformation.Name
+	ds[0] = d
+
+	return ds
 }
 
 func flattenFeatures(feature *slack.Features) []interface{} {
@@ -166,6 +224,54 @@ func flattenBotUser(botUser *slack.BotUser) []interface{} {
 }
 
 func flattenSlashCommands(slashCommands *[]slack.SlashCommandManifest) []interface{} {
+	if slashCommands != nil {
+		scs := make([]interface{}, len(*slashCommands), len(*slashCommands))
+
+		for i, slashCommand := range *slashCommands {
+			sc := make(map[string]interface{})
+
+			sc["command"] = slashCommand.Command
+			sc["url"] = slashCommand.Url
+			sc["description"] = slashCommand.Description
+			sc["usage_hint"] = slashCommand.UsageHint
+			sc["should_escape"] = slashCommand.ShouldEscape
+
+			scs[i] = sc
+		}
+		return scs
+	}
+	return make([]interface{}, 0)
+}
+
+func flattenOAuthConfig(oauthConfig *slack.OAuthConfig) []interface{} {
+	oacs := make([]interface{}, 1, 1)
+
+	if oauthConfig != nil {
+		oac := make(map[string]interface{})
+		oac["redirect_urls"] = oauthConfig.RedirectUrls
+		oac["scopes"] = flattenScopes(&oauthConfig.Scopes)
+		oacs[0] = oac
+
+		return oacs
+	}
+
+	return make([]interface{}, 0)
+}
+
+
+func flattenScopes(scopes *slack.Scopes) []interface{} {
+	ss := make([]interface{}, 1, 1)
+
+	if scopes != nil {
+		s := make(map[string]interface{})
+		s["bot"] = scopes.Bot
+		ss[0] = s
+	}
+
+	return ss
+}
+
+func flattenRedirectUrls(slashCommands *[]slack.SlashCommandManifest) []interface{} {
 	if slashCommands != nil {
 		scs := make([]interface{}, len(*slashCommands), len(*slashCommands))
 
