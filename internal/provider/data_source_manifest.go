@@ -137,24 +137,30 @@ func flattenMetadata(metadata *slack.Metadata) []interface{} {
 func flattenFeatures(feature *slack.Features) []interface{} {
 	fs := make([]interface{}, 1, 1)
 
-	f := make(map[string]interface{})
-	bu := flattenBotUser(feature.BotUser)
-	f["bot_user"] = bu
+	if feature != nil {
+		f := make(map[string]interface{})
+		bu := flattenBotUser(feature.BotUser)
+		f["bot_user"] = bu
 
-	sc := flattenSlashCommands(&feature.SlashCommands)
-	f["slash_commands"] = sc
-	fs[0] = f
+		sc := flattenSlashCommands(&feature.SlashCommands)
+		f["slash_commands"] = sc
+		fs[0] = f
 
-	return fs
+		return fs
+	}
+
+	return make([]interface{}, 0)
 }
 
 func flattenBotUser(botUser *slack.BotUser) []interface{} {
 	bs := make([]interface{}, 1, 1)
 
-	b := make(map[string]interface{})
-	b["display_name"] = botUser.DisplayName
-	b["always_online"] = botUser.AlwaysOnline
-	bs[0] = b
+	if botUser != nil {
+		b := make(map[string]interface{})
+		b["display_name"] = botUser.DisplayName
+		b["always_online"] = botUser.AlwaysOnline
+		bs[0] = b
+	}
 
 	return bs
 }
