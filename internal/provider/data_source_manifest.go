@@ -177,9 +177,9 @@ func dataSourceManifest() *schema.Resource {
 func dataSourceManifestRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
+	slackApiClient := meta.(*slack.Client)
 	appId := d.Get("app_id").(string)
-	api := slack.New("TOKEN_HERE")
-	manifest, err := api.ExportAppManifest(appId) //("A02TDSWCDDE")
+	manifest, err := slackApiClient.ExportAppManifest(appId)
 	if err != nil {
 		return diag.Errorf("Failed to make request via client.")
 	}
