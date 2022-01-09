@@ -130,6 +130,46 @@ func dataSourceManifest() *schema.Resource {
 					},
 				},
 			},
+			"settings": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"event_subscriptions": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"request_url": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"bot_events": &schema.Schema{
+										Computed: true,
+										Type:     schema.TypeList,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
+						},
+						"org_deploy_enabled": &schema.Schema{
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+						"socket_mode_enabled": &schema.Schema{
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+						"token_rotation_enabled": &schema.Schema{
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+
+					},
+				},
+			},
 		},
 	}
 }
@@ -163,6 +203,11 @@ func dataSourceManifestRead(ctx context.Context, d *schema.ResourceData, meta in
 
 	oauthConfig := flattenOAuthConfig(manifest.OAuthConfig)
 	if err := d.Set("oauth_config", oauthConfig); err != nil {
+		return diag.FromErr(err)
+	}
+
+	settings := flattenSettings(manifest.Settings)
+	if err := d.Set("settings", settings); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -289,4 +334,34 @@ func flattenRedirectUrls(slashCommands *[]slack.SlashCommandManifest) []interfac
 		return scs
 	}
 	return make([]interface{}, 0)
+}
+
+func flattenSettings(settings *slack.Settings) []interface{} {
+	ss := make([]interface{}, 1, 1)
+
+	if settings != nil {
+		s := make(map[string]interface{})
+		s["event_subscriptions"] = flattenEventSubscriptions(settings.EventSubscriptions)
+		s["org_deploy_enabled"] = settings.OrgDeployEnabled
+		s["socket_mode_enabled"] = settings.SocketModeEnabled
+		s["token_rotation_enabled"] = settings.TokenRotationEnabled
+		ss[0] = s
+
+		return ss
+	}
+
+	return make([]interface{}, 0)
+}
+
+func flattenEventSubscriptions(eventSubscriptions *slack.EventSubscriptions) []interface{} {
+	ess := make([]interface{}, 1, 1)
+
+	if eventSubscriptions != nil {
+		es := make(map[string]interface{})
+		es["request_url"] = eventSubscriptions.RequestUrl
+		es["bot_events"] = eventSubscriptions.BotEvents
+		ess[0] = es
+	}
+
+	return ess
 }

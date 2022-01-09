@@ -12,8 +12,10 @@ provider "slack" {
 }
 
 data "slack_manifest" "example" {
-  app_id = "A8UDA7VKN"
+  app_id = "A02TDSWCDDE"
 }
+// A02TDSWCDDE -- minimal
+// A8UDA7VKN -- example slackbot
 
 output "some_manifest" {
   value = data.slack_manifest.example
