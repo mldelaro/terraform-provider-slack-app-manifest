@@ -37,7 +37,7 @@ func New(version string) func() *schema.Provider {
 				"slack_manifest": dataSourceManifest(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				"scaffolding_resource": resourceScaffolding(),
+				"slack_manifest": resourceManifest(),
 			},
 		}
 
