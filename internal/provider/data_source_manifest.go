@@ -294,7 +294,7 @@ func flattenOAuthConfig(oauthConfig *slack.OAuthConfig) []interface{} {
 	if oauthConfig != nil {
 		oac := make(map[string]interface{})
 		oac["redirect_urls"] = oauthConfig.RedirectUrls
-		oac["scopes"] = flattenScopes(&oauthConfig.Scopes)
+		oac["scopes"] = flattenScopes(oauthConfig.Scopes)
 		oacs[0] = oac
 
 		return oacs
