@@ -132,10 +132,29 @@ func resourceManifestRead(ctx context.Context, d *schema.ResourceData, meta inte
 }
 
 func resourceManifestUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var diags diag.Diagnostics
 	// use the meta value to retrieve your client from the provider configure method
 	// client := meta.(*apiClient)
+	slackApiClient := meta.(*slack.Client)
+	appManifest := d.Get("manifest").(string)
+	appId := d.Get("app_id").(string)
+	updateManifestResponse, err := slackApiClient.UpdateAppManifest(appId, appManifest)
+	if err != nil {
+		return diag.Errorf("Failed to make request to update manifest via client.")
+	}
 
-	return diag.Errorf("not implemented")
+	d.SetId(updateManifestResponse.AppId)
+	if err := d.Set("app_id", updateManifestResponse.AppId); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("manifest", appManifest); err != nil {
+		return diag.FromErr(err)
+	}
+	if !updateManifestResponse.Ok {
+		return diag.Errorf("Received non-ok response from client.")
+	}
+	resourceManifestRead(ctx, d, meta)
+	return diags
 }
 
 func resourceManifestDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -146,7 +165,7 @@ func resourceManifestDelete(ctx context.Context, d *schema.ResourceData, meta in
 	appId := d.Id()
 	slackResponse, err := slackApiClient.DeleteAppManifest(appId)
 	if err != nil {
-		return diag.Errorf("Failed to make request to read manifest via client.")
+		return diag.Errorf("Failed to make request to delete manifest via client.")
 	}
 
 	if !slackResponse.Ok {
