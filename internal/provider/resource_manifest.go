@@ -109,7 +109,6 @@ func flattenCredentials(credentials *slack.Credentials) []interface{} {
 	return cs
 }
 
-
 func resourceManifestRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	// use the meta value to retrieve your client from the provider configure method
@@ -122,13 +121,13 @@ func resourceManifestRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	strManifest, err := json.Marshal(manifest)
-    if err != nil {
-        return diag.Errorf("Failed to marshal app manifest.")
-    }
+	if err != nil {
+		return diag.Errorf("Failed to marshal app manifest.")
+	}
 
-    d.Set("manifest", strManifest)
+	d.Set("manifest", strManifest)
 
-    return diags
+	return diags
 }
 
 func resourceManifestUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -173,5 +172,5 @@ func resourceManifestDelete(ctx context.Context, d *schema.ResourceData, meta in
 	}
 
 	// d.SetId("") is automatically called assuming delete returns no errors
-    return diags
+	return diags
 }

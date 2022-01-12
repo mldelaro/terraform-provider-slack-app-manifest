@@ -166,7 +166,6 @@ func dataSourceManifest() *schema.Resource {
 							Type:     schema.TypeBool,
 							Computed: true,
 						},
-
 					},
 				},
 			},
@@ -302,7 +301,6 @@ func flattenOAuthConfig(oauthConfig *slack.OAuthConfig) []interface{} {
 
 	return make([]interface{}, 0)
 }
-
 
 func flattenScopes(scopes *slack.Scopes) []interface{} {
 	ss := make([]interface{}, 1, 1)

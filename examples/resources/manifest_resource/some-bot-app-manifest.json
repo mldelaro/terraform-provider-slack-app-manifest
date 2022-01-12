@@ -1,0 +1,51 @@
+{
+    "display_information": {
+        "name": "Some Bot Name Updated"
+    },
+    "features": {
+        "bot_user": {
+            "display_name": "some-bot",
+            "always_online": false
+        },
+        "slash_commands": [
+            {
+                "command": "/some-slash-command",
+                "url": "https://some-lambda.execute-api.us-west-2.amazonaws.com/event/slash-command",
+                "description": "Does something",
+                "usage_hint": "[help]",
+                "should_escape": false
+            }
+        ]
+    },
+    "oauth_config": {
+        "redirect_urls": [
+            "https://some-lambda.execute-api.us-west-2.amazonaws.com/oauth"
+        ],
+        "scopes": {
+            "bot": [
+                "chat:write",
+                "commands",
+                "im:read",
+                "app_mentions:read",
+                "channels:history",
+                "groups:history",
+                "im:history",
+                "mpim:history"
+            ]
+        }
+    },
+    "settings": {
+        "event_subscriptions": {
+            "request_url": "https://some-lambda.execute-api.us-west-2.amazonaws.com/sandbox/event",
+            "bot_events": [
+                "message.channels",
+                "message.groups",
+                "message.im",
+                "message.mpim"
+            ]
+        },
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": false,
+        "token_rotation_enabled": false
+    }
+}

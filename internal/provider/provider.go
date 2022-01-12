@@ -53,11 +53,11 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	var diags diag.Diagnostics
 
 	if slackApiToken != "" {
-		c :=  slack.New(slackApiToken)
+		c := slack.New(slackApiToken)
 		return c, diags
 	}
 
-	c :=  slack.New("")
+	c := slack.New("")
 	diags = append(diags, diag.Diagnostic{
 		Severity: diag.Error,
 		Summary:  "Unable to create Slack API Client",
