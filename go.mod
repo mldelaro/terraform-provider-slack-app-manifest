@@ -18,7 +18,7 @@ require (
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
-	github.com/mldelaro/slack v0.10.6
+	github.com/mldelaro/slack v0.10.7
 	github.com/oklog/run v1.1.0 // indirect
 	golang.org/x/net v0.0.0-20220111093109-d55c255bac03 // indirect
 	golang.org/x/sys v0.0.0-20220111092808-5a964db01320 // indirect

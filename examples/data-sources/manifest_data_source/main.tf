@@ -2,20 +2,18 @@ terraform {
   required_providers {
     slack = {
       version = "0.3.1"
-      source = "hashicorp.com/edu/slack-app-manifest"
+      source = "asu.edu/mldelaro/slack-app-manifest"
     }
   }
 }
 
 provider "slack" {
-  token = "TOKEN_HERE"
+  token = var.slack_app_config_token
 }
 
 data "slack_manifest" "example" {
-  app_id = "A02TDSWCDDE"
+  app_id = var.slack_app_id
 }
-// A02TDSWCDDE -- minimal
-// A8UDA7VKN -- example slackbot
 
 output "some_manifest" {
   value = data.slack_manifest.example

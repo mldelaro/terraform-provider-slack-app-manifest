@@ -1,6 +1,6 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
-HOSTNAME=hashicorp.com
-NAMESPACE=edu
+HOSTNAME=asu.edu
+NAMESPACE=mldelaro
 NAME=slack-app-manifest
 BINARY=terraform-provider-${NAME}
 VERSION=0.3.1
