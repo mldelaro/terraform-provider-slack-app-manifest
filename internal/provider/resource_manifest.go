@@ -45,14 +45,17 @@ func resourceManifest() *schema.Resource {
 						"client_secret": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
+							Sensitive: true,
 						},
 						"verification_token": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
+							Sensitive: true,
 						},
 						"signing_secret": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
+							Sensitive: true,
 						},
 					},
 				},

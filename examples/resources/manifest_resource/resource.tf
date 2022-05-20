@@ -10,7 +10,8 @@ terraform {
 provider "slack" {
   token = var.slack_app_config_token
 }
-
+/*
 resource "slack_manifest" "example" {
   manifest = file("some-bot-app-manifest.json")
 }
+*/
