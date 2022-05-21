@@ -2,7 +2,7 @@ terraform {
   required_providers {
     slack = {
       version = "0.3.1"
-      source = "asu.edu/mldelaro/slack-app-manifest"
+      source  = "asu.edu/mldelaro/slack-app-manifest"
     }
   }
 }
